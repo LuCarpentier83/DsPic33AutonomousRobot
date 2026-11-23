@@ -1,61 +1,61 @@
-# Robot autonome — dsPIC33EP512GM306
+# Autonomous Robot — dsPIC33EP512GM306
 
-Projet de programmation embarquée réalisé à SeaTech : un petit robot mobile à deux moteurs
-qui évite les obstacles grâce à des télémètres infrarouges, piloté par un microcontrôleur
-**dsPIC33EP512GM306**, avec une interface PC (WPF / C#) qui communique avec lui par liaison série.
+School project at SeaTech: a small two-wheeled mobile robot that avoids obstacles with
+infrared rangefinders. It runs on a **dsPIC33EP512GM306** microcontroller and talks over a
+serial link to a Windows PC monitoring app (WPF / C#).
 
-## Contenu
+## Contents
 
 ```
-firmware/       Code C du microcontrôleur (MPLAB X, compilateur XC16)
-pc-interface/   Application Windows WPF (.NET 6) de supervision par port série
+firmware/       C code for the microcontroller (MPLAB X, XC16 compiler)
+pc-interface/   Windows WPF app (.NET 6) for serial monitoring
 ```
 
 ### Firmware
 
-| Fichier | Rôle |
+| File | Role |
 |---|---|
-| `main.c` / `main.h` | Boucle principale et machine à états du robot (attente, avance, tourne, recule…) |
-| `ChipConfig.c` | Bits de configuration et horloge du dsPIC |
-| `IO.c` | Affectation des broches (LED, moteurs, UART) |
-| `timer.c` | Timers 1, 3 et 4 (rafraîchissement PWM, horodatage, déclenchement ADC) |
-| `PWM.c` | Commande des moteurs avec rampe de vitesse |
-| `ADC.c` | Acquisition des 5 télémètres infrarouges |
-| `UART.c` | UART1 à 115200 bauds |
-| `CB_TX1.c` / `CB_RX1.c` | Buffers circulaires d'émission / réception UART |
-| `UART_Protocol.c` | Encodage des trames du protocole |
-| `ToolBox.c` | Fonctions utilitaires |
+| `main.c` / `main.h` | Main loop and robot state machine (wait, forward, turn, spin, back up…) |
+| `ChipConfig.c` | dsPIC configuration bits and clock |
+| `IO.c` | Pin mapping (LEDs, motors, UART) |
+| `timer.c` | Timers 1, 3 and 4 (PWM refresh, timestamp, ADC trigger) |
+| `PWM.c` | Motor control with speed ramps |
+| `ADC.c` | Reads the 5 infrared rangefinders |
+| `UART.c` | UART1 at 115200 baud |
+| `CB_TX1.c` / `CB_RX1.c` | Circular buffers for UART transmit / receive |
+| `UART_Protocol.c` | Frame encoding for the serial protocol |
+| `ToolBox.c` | Utility functions |
 
-### Interface PC
+### PC interface
 
-Application WPF qui ouvre le port série (`COM21`, 115200 bauds), décode les trames reçues et
-affiche les mesures des télémètres, l'état des LED et les vitesses des moteurs.
+WPF app that opens the serial port (`COM21`, 115200 baud), decodes incoming frames and
+shows the rangefinder distances, the LED states and the motor speeds.
 
-Elle dépend de la bibliothèque `ExtendedSerialPort` fournie pendant le cours (non incluse ici) :
-le `.csproj` l'attend dans `..\C#\ExtendedSerialPort .NET6\`.
+It depends on the `ExtendedSerialPort` library provided during the course, which is not
+included here. The `.csproj` expects it in `..\C#\ExtendedSerialPort .NET6\`.
 
-## Protocole série
+## Serial protocol
 
 ```
-0xFE | Fonction (2 octets) | Longueur payload (2 octets) | Payload | Checksum
+0xFE | Function (2 bytes) | Payload length (2 bytes) | Payload | Checksum
 ```
 
-Le checksum est le XOR de `0xFE`, de la fonction, de la longueur et de chaque octet du payload.
+The checksum is the XOR of `0xFE`, the function, the length and every payload byte.
 
-| Fonction | Contenu |
+| Function | Payload |
 |---|---|
-| `0x0080` | Texte |
-| `0x0020` | État des LED |
-| `0x0030` | Distances des télémètres IR (gauche, centre, droit) |
-| `0x0040` | Vitesses des moteurs (droit, gauche) |
+| `0x0080` | Text |
+| `0x0020` | LED state |
+| `0x0030` | IR rangefinder distances (left, center, right) |
+| `0x0040` | Motor speeds (right, left) |
 
-## Compilation
+## Build
 
-- **Firmware** : créer un projet MPLAB X pour le dsPIC33EP512GM306 (XC16), y ajouter les
-  fichiers de `firmware/` puis compiler et flasher avec un PICkit / ICD.
-- **Interface PC** : ouvrir `pc-interface/Courtois_Carpentier_WPF.sln` dans Visual Studio
+- **Firmware**: create an MPLAB X project for the dsPIC33EP512GM306 (XC16), add the files
+  from `firmware/`, then build and flash with a PICkit or an ICD.
+- **PC interface**: open `pc-interface/Courtois_Carpentier_WPF.sln` in Visual Studio
   (Windows, .NET 6).
 
-## Auteurs
+## Authors
 
-Courtois & Carpentier — SeaTech.
+Courtois & Carpentier, SeaTech.
