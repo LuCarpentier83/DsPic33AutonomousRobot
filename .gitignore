@@ -1,0 +1,17 @@
+# MPLAB X
+nbproject/private/
+build/
+dist/
+debug/
+*.hex
+*.elf
+*.map
+*.o
+*.d
+
+# Visual Studio / .NET
+.vs/
+bin/
+obj/
+*.user
+*.suo
